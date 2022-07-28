@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 
@@ -27,5 +28,10 @@ func main() {
 
 	http.Handle("/", router)
 
-	http.ListenAndServe(":8080", router)
+	err := http.ListenAndServe(":8080", router)
+
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
