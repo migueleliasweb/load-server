@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# Dist
+load-server-darwin-amd64
+load-server-linux-amd64
