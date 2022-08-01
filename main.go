@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"runtime"
-	"time"
 
 	"github.com/gorilla/mux"
+
+	"github.com/migueleliasweb/load-server/pkg/limiter"
 )
 
 func main() {
-	runtime.GOMAXPROCS(1)
-
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -20,10 +18,11 @@ func main() {
 	})
 
 	for i := 0; i <= 999; i++ {
-		router.HandleFunc(fmt.Sprintf("/loadtest/%d", i), func(w http.ResponseWriter, r *http.Request) {
-			time.Sleep(time.Millisecond * 100)
+		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Greetings from \"" + r.URL.Path + "\"\n"))
 		})
+
+		router.Handle(fmt.Sprintf("/loadtest/%d", i), limiter.AddLimiter(100, handler))
 	}
 
 	http.Handle("/", router)
